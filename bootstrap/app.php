@@ -57,13 +57,21 @@ $app->singleton(
 |
 */
 
+$app->configure('cors');
+$app->register(Barryvdh\Cors\ServiceProvider::class);
+
 // $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
+    // App\Http\Middleware\ExampleMiddleware::class
+    // \Barryvdh\Cors\HandleCors::class,
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'auth'      => App\Http\Middleware\Authenticate::class,
+    // 'cors'      => App\Http\Middleware\CorsMiddleware::class,
+    'cors'  => \Barryvdh\Cors\HandleCors::class,
+    'jwt'       => App\Http\Middleware\JWTMiddleware::class,
+    'key-api'   => App\Http\Middleware\KeyMiddleware::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -100,5 +108,6 @@ $app->router->group([
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->configure('database');
 $app->configure('cache');
+
 
 return $app;

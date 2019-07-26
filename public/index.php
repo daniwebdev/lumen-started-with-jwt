@@ -1,5 +1,9 @@
 <?php
-
+// $origin = $_SERVER['HTTP_ORIGIN'];
+// header("Access-Control-Allow-Origin: $origin"); 
+// header("Access-Control-Allow-Credentials: true");
+// header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding, x-api-key");
+// header("Access-Control-Allow-Methods: PUT, POST, GET, OPTIONS, DELETE");
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -24,5 +28,8 @@ $app = require __DIR__.'/../bootstrap/app.php';
 | and wonderful application we have prepared for them.
 |
 */
-
+// header("Access-Control-Allow-Origin: *"); 
+// header("Access-Control-Allow-Credentials: true");
+// header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding");
+// header("Access-Control-Allow-Methods: PUT, POST, GET, OPTIONS, DELETE");
 $app->run();
