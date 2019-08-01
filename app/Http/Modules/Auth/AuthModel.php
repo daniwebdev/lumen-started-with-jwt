@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Models;
+namespace App\Http\Modules\Auth;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Cache;
+// use Illuminate\Support\Facades\Redis;
+// use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AuthModel extends Model {

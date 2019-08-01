@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Models;
+namespace App\Http\Modules\Personal;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
@@ -11,7 +11,8 @@ class PersonalModel extends Model {
 
     public    $storage;    
                             //  Sec   Min      
-    protected $cache_expire     =  (1*60) *10; //satuan detik
+    // protected $cache_expire     =  (1*60) *10; //satuan detik
+    protected $cache_expire     =  10; //satuan detik
     protected $per_page         = 10;
 
     function __construct()
@@ -20,14 +21,18 @@ class PersonalModel extends Model {
         $this->storage = Redis::connection();
     }
 
-    function find($params=[]) {
-
+    function get_all($params=[]) {        
         //create key for redis
         $key = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         
         //search key for redis
         if(isset($params['search'])) {
             $key = 'search_'.str_replace(' ', '_', $params['search']).'_'.$key;
+        }
+
+        $filter = $params['filter'];
+        if(count($filter)) {
+            $key = 'filter:'.md5(implode('.', $params['filter'])).$key;
         }
 
         //database caching
@@ -42,9 +47,6 @@ class PersonalModel extends Model {
 
         $select   = $this->field_selected();
         
-        $select[] = DB::raw('(SELECT COUNT(kmo.id) FROM karyawan_mutasi_organisasi kmo WHERE kmo.personal_id = personal.id AND kmo.status_karyawan_mutasi = 1) as related_kmo');
-        $select[] = DB::raw('(SELECT COUNT(users.id) FROM users WHERE id_karyawan =  (SELECT TOP 1 kmo.id FROM karyawan_mutasi_organisasi kmo WHERE kmo.personal_id = personal.id AND kmo.status_karyawan_mutasi = 1)) as related_user');
-
         $paginator = DB::table('personal')
                          ->select($select);
                         //  ->join('personal_file_dokumen', 'personal_id', '=', 'personal.id');
@@ -52,6 +54,15 @@ class PersonalModel extends Model {
         if(isset($params['search'])) {
             $s = $params['search'];
             $paginator->where('personal.nama_lengkap', 'LIKE', "%$s%");
+        }
+        
+        // set_filter
+
+        $filter = $params['filter'];
+        if(count($filter)) {
+            foreach($filter as $value) {
+                $paginator->whereRaw($value);
+            }
         }
         
         $paginator = $paginator->paginate($this->per_page);
@@ -79,7 +90,6 @@ class PersonalModel extends Model {
                     ->join('personal_file_dokumen', 'personal_id', '=', 'personal.id');
 
             $personal             = $query->first();
-
             $output['personal']   = $personal;
             $output['alamat']     = $this->alamat_personal($personal->id);
             $output['karyawan']   = $this->karyawan_personal($personal->id);
@@ -100,7 +110,7 @@ class PersonalModel extends Model {
             "personal.nama_panggilan",
             "personal.tempat_lahir",
             "personal.tgl_lahir",
-            "personal.jenis_kelamin_id",
+            // "personal.jenis_kelamin_id",
             "personal.agama_id",
             "personal.golongan_darah_id",
             "personal.kewarganegaraan_id",
@@ -116,6 +126,10 @@ class PersonalModel extends Model {
             // 'personal_file_dokumen.gambar_ktp',
             // 'personal_file_dokumen.gambar_profil'
         ];
+        $select[] = DB::raw('(SELECT COUNT(kmo.id) FROM karyawan_mutasi_organisasi kmo WHERE kmo.personal_id = personal.id AND kmo.status_karyawan_mutasi = 1) as related_kmo');
+        $select[] = DB::raw('(SELECT COUNT(users.id) FROM users WHERE id_karyawan =  (SELECT TOP 1 kmo.id FROM karyawan_mutasi_organisasi kmo WHERE kmo.personal_id = personal.id AND kmo.status_karyawan_mutasi = 1)) as related_user');
+        $select[] = DB::raw('(SELECT info.nama_administratif FROM informasi_administratif info WHERE info.id =  personal.jenis_kelamin_id) as jenis_kelamin');
+
 
         return $select;
     }

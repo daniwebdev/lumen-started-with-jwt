@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Modules\Auth;
+
+use App\Http\Controllers\Controller;
 
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Models\AuthModel;
+use App\Http\Modules\Auth\AuthModel;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -54,7 +56,7 @@ class AuthController extends Controller
         $payload = [
             'iss'   => "lumen-jwt",     // Issuer of the token
             'iat'   => time(),          // Time when JWT was issued. 
-            'exp'   => time() + 60*60,  // Expiration time
+            'exp'   => time() + 60*60*24,  // Expiration time
             'user'  => [
                 'id_user'           => $user->id,
                 'id_karyawan'       => $user->id_karyawan,

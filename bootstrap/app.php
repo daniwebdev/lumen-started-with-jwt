@@ -101,7 +101,21 @@ $app->routeMiddleware([
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
+
     require __DIR__.'/../routes/web.php';
+
+    $dir_module     =  __DIR__.'/../app/Http/Modules';
+    $scan_routes    = scandir( $dir_module);
+
+    foreach($scan_routes as $path) {
+
+        $route_path = $dir_module.'/'.$path.'/routes.php';
+        if( $path != '_contoh' && file_exists($route_path) ) {
+            require $route_path;
+        }
+
+    }
+
 });
 
 //Redis Config
