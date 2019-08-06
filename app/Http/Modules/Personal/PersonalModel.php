@@ -11,8 +11,8 @@ class PersonalModel extends Model {
 
     public    $storage;    
                             //  Sec   Min      
-    // protected $cache_expire     =  (1*60) *10; //satuan detik
-    protected $cache_expire     =  10; //satuan detik
+    protected $cache_expire     =  (1*60) *10; //satuan detik
+    // protected $cache_expire     =  10; //satuan detik
     protected $per_page         = 10;
 
     function __construct()
@@ -30,8 +30,8 @@ class PersonalModel extends Model {
             $key = 'search_'.str_replace(' ', '_', $params['search']).'_'.$key;
         }
 
-        $filter = $params['filter'];
-        if(count($filter)) {
+        if(!empty($params['filter'])) {
+            $filter = $params['filter'];
             $key = 'filter:'.md5(implode('.', $params['filter'])).$key;
         }
 
@@ -58,8 +58,8 @@ class PersonalModel extends Model {
         
         // set_filter
 
-        $filter = $params['filter'];
-        if(count($filter)) {
+        if(!empty($params['filter'])) {
+            $filter = $params['filter'];
             foreach($filter as $value) {
                 $paginator->whereRaw($value);
             }
