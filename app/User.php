@@ -20,7 +20,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $fillable = [
         'name', 'email',
     ];
-
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -29,4 +28,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    public $tables = 'users';
 }

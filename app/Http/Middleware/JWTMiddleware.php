@@ -21,7 +21,6 @@ class JWTMiddleware
 
         if(!$token) {
             // Unauthorized response if token not there
-
             $output['status']  = false;
             $output['message'] = "Authentication Failed.";
             $output['error']   = "Token not provided.";
@@ -47,7 +46,7 @@ class JWTMiddleware
             return response()->json($output, 400);
         }
 
-        $request->request->add(['auth' => ['user'=>$credentials->user]]);
+        $request->request->add(['auth' => ['user' => $credentials->user]]);
 
         return $next($request);
     }

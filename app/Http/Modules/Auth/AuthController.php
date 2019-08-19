@@ -27,15 +27,10 @@ class AuthController extends Controller
         $password     = $request->password;
 
         $user         = $model->check($username);
-        
         $passwordHash = isset($user->password) ? $user->password:'';
         $check        = Hash::check($password, $passwordHash);
         
         if($check) {
-
-            unset($user->password);
-            unset($user->id_firebase);
-            unset($user->id_firebase_token);
 
             $output['status']   = true;
             $output['message']  = 'Authentication Successfull.';
@@ -59,10 +54,7 @@ class AuthController extends Controller
             'exp'   => time() + 60*60*24,  // Expiration time
             'user'  => [
                 'id_user'           => $user->id,
-                'id_karyawan'       => $user->id_karyawan,
-                'id_personal'       => $user->id_personal,
                 'username'          => $user->username,
-                'id_relasi_cabang'  => $user->id_relasi_cabang,
             ],
         ];
         
