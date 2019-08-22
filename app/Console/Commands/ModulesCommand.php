@@ -26,15 +26,14 @@ class ModulesCommand extends Command
      *
      * @var string
      */
-    protected $signature = "make:module {name}";
+    protected $signature = "module:create {type} {name=0}";
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Generate Module include Controller, Model, Route";
-
+    protected $description = "Create New Module include Controller, Model, Route";
 
     /**
      * Execute the console command.
@@ -43,15 +42,53 @@ class ModulesCommand extends Command
      */
     public function handle()
     {
-        $name       = ucwords($this->argument('name'));
-        $path       = './app/Http/Modules/'.$name;
-        if(!is_dir($path)) {
+        $this->line("<fg=green>==================================================</>");
+        $this->line("<fg=green>+     __  __       ____              _____       +</>");
+        $this->line("<fg=green>+    |  \/  |_   _|  _ \  __ _ _ __ |___ /       +</>");
+        $this->line("<fg=green>+    | |\/| | | | | | | |/ _` | '_ \  |_ \       +</>");
+        $this->line("<fg=green>+    | |  | | |_| | |_| | (_| | | | |___) |      +</>");
+        $this->line("<fg=green>+    |_|  |_|\__, |____/ \__,_|_| |_|____/       +</>");
+        $this->line("<fg=green>+            |___/Lumen-HMVC v.1.0               +</>");
+        $this->line("<fg=green>+                                                +</>");
+        $this->line("<fg=green>==================================================</>");
 
-            mkdir($path);
-            $this->generate_controller($path, $name);
-            $this->generate_model($path, $name);
-            $this->generate_routes($path, $name);
+        
+        $arg    = $this->argument('type');
+        $name   = $this->argument('name');
+        $type   = 'module';
 
+        if($arg == 'model' || $arg == 'm') {
+            $type = 'model';
+        } elseif($arg == 'controller' || $arg == 'c') {
+            $type = 'controller';
+        } else {
+            $name = $arg;
+        }
+        
+        
+        if($type == 'module') {
+            $name       = ucwords($name);
+            $path       = './app/Http/Modules/'.$name;
+            die;
+            if(!is_dir($path)) {
+                mkdir($path);
+                $this->generate_controller($path, $name);
+                $this->generate_model($path, $name);
+                $this->generate_routes($path, $name);
+    
+            }
+        } elseif($type == 'controller') {
+            $set_name  = explode('/', $name);
+            $set_name  = end($set_name);
+            $_path     = str_replace('/'.$set_name, '', $name);
+            $path  = './app/Http/Modules/'.$_path;
+            $this->generate_controller($path, $set_name);
+        } elseif($type == 'model') {
+            $set_name  = explode('/', $name);
+            $set_name  = end($set_name);
+            $_path     = str_replace('/'.$set_name, '', $name);
+            $path  = './app/Http/Modules/'.$_path;
+            $this->generate_model($path, $set_name);
         }
     }
 
@@ -83,6 +120,7 @@ class {name}Controller extends Controller
         $write_controller = str_replace('{name}', $name, $controller);
         fwrite($myfile, $write_controller);
         fclose($myfile);
+        $this->line("Controller Generated in <fg=green>".$file_path."</>");
     }
 
     public function generate_model($path, $name) {
@@ -119,6 +157,7 @@ class {name}Model extends Model
         $write_controller = str_replace('{name}', $name, $controller);
         fwrite($myfile, $write_controller);
         fclose($myfile);
+        $this->line("Model Generated in <fg=green>".$file_path."</>");
     }
 
     function generate_routes($path, $name) {
